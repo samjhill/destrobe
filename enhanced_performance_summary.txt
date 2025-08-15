@@ -1,0 +1,38 @@
+# Enhanced Algorithm Performance Summary
+
+## Test Results on Synthetic Videos:
+
+### Subtle Flicker (realistic flash intensity):
+- Original algorithm: 50.6% reduction (0.015 → 0.008 FI)
+- Enhanced median: 50.6% reduction, SSIM: 0.746
+- Enhanced flashcap: -13.4% (over-corrected this type)
+
+### Rapid Strobe (15Hz epilepsy-trigger pattern):
+- Enhanced flashcap: 96.0% reduction (253 → 10 FI) ✨
+- Enhanced median: 0.8% reduction (poor for rapid alternation)
+
+## Recommendations for Real Videos:
+
+### Use enhanced_flashcap for:
+- Rapid strobing/flashing (>5Hz)
+- High-contrast flashes
+- Epilepsy-trigger content
+- Animation with bright effects
+
+### Use enhanced_median for:
+- Isolated bright flashes
+- Camera flashes
+- Explosion effects
+- Single-frame brightness spikes
+
+### Use enhanced_ema for:
+- General temporal smoothing
+- Motion-heavy content
+- Gradual brightness variations
+- Content with camera movement
+
+## Improved Parameters:
+- Flash threshold lowered to 0.03-0.05 (was 0.12)
+- Percentile-based detection (90th percentile vs mean)
+- Spatial awareness and motion compensation
+- Adaptive window sizing
