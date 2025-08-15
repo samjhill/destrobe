@@ -8,9 +8,9 @@ A cross-platform Python CLI that reduces strobing/flicker in videos while preser
 
 **destrobe reduces flashing but cannot guarantee complete removal of all photosensitive triggers.** Always preview content first if you have photosensitive epilepsy or similar conditions. Use at your own discretion.
 
-### ⚠️ Test File Warning
+### ⚠️ Example Files Warning
 
-**The included `porygon.mp4` test file contains rapid flashing and strobing effects that may trigger photosensitive epilepsy or seizures.** This file is included specifically to demonstrate destrobe's flicker reduction capabilities on challenging content. **DO NOT VIEW this file directly if you have photosensitive epilepsy or related conditions.** Only view the processed versions (e.g., `porygon_ULTRA.preview.mp4`) which have had the flashing significantly reduced.
+**The example videos in the `examples/` directory contain rapid flashing and strobing effects that may trigger photosensitive epilepsy or seizures.** These files are included specifically to demonstrate destrobe's flicker reduction capabilities on challenging content. **DO NOT VIEW the original files directly if you have photosensitive epilepsy or related conditions.** Only view the processed versions (e.g., `examples/porygon_ULTRA.preview.mp4`) which have had the flashing significantly reduced.
 
 ## Quick Start
 

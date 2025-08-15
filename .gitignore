@@ -95,7 +95,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Video files (except test files)
+# Video files (except example files)
 *.mp4
 *.avi
 *.mov
@@ -105,10 +105,12 @@ dmypy.json
 *.flv
 *.wmv
 
-# But keep specific test files
-!porygon.mp4
-!flash_test.mp4
-!*preview*.mp4
+# But keep example files in examples/ directory
+!examples/**/*.mp4
+!examples/**/*.avi
+!examples/**/*.mov
+!examples/**/*.mkv
+!examples/**/*.webm
 
 # Audio files
 *.mp3
