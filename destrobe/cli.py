@@ -65,7 +65,9 @@ def discover_video_files(
 ) -> List[Path]:
     """Discover video files from input paths."""
     if extensions is None:
-        extensions = [".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v"]
+        # Import supported extensions from normalization module
+        from destrobe.core.normalization import SUPPORTED_EXTENSIONS
+        extensions = SUPPORTED_EXTENSIONS
     
     video_files = []
     
@@ -102,6 +104,8 @@ def run(
     preset: Optional[str] = typer.Option(None, "--preset", help="Use preset configuration"),
     threads: Optional[int] = typer.Option(None, "--threads", help="Number of processing threads"),
     no_warn: bool = typer.Option(False, "--no-warn", help="Skip photosensitivity warning"),
+    no_normalize: bool = typer.Option(False, "--no-normalize", help="Skip input format normalization"),
+    fast_normalize: bool = typer.Option(False, "--fast-normalize", help="Use faster normalization (lower quality)"),
 ) -> None:
     """Process video files to reduce strobing and flicker."""
     
@@ -156,6 +160,8 @@ def run(
         flash_thresh=flash_thresh,
         no_audio=no_audio,
         threads=threads,
+        normalize_input=not no_normalize,
+        preserve_quality=not fast_normalize,
     )
     
     # Process files
@@ -178,7 +184,7 @@ def run(
             try:
                 # Process the video
                 metrics = processor.process_video(
-                    video_file, output_file, progress_callback=lambda: progress.advance(task)
+                    video_file, output_file, progress_callback=None
                 )
                 
                 # Log metrics
@@ -189,6 +195,8 @@ def run(
                         "method": method,
                         "strength": strength,
                         "flash_thresh": flash_thresh,
+                        "normalize_input": not no_normalize,
+                        "fast_normalize": fast_normalize,
                         **metrics,
                     }
                     logger.info(log_entry)
@@ -196,8 +204,9 @@ def run(
                 # Print summary
                 if "flicker_before" in metrics and "flicker_after" in metrics:
                     reduction = (1 - metrics["flicker_after"] / metrics["flicker_before"]) * 100
+                    normalized_indicator = " [normalized]" if metrics.get("input_normalized", False) else ""
                     console.print(
-                        f"→ {video_file.name} → {output_file.name}\n"
+                        f"→ {video_file.name}{normalized_indicator} → {output_file.name}\n"
                         f"  FI: {metrics['flicker_before']:.3f} → {metrics['flicker_after']:.3f} "
                         f"({reduction:+.1f}%), SSIM: {metrics.get('ssim', 0):.3f}"
                     )
@@ -207,7 +216,8 @@ def run(
                 
             except Exception as e:
                 console.print(f"[red]Error processing {video_file.name}:[/red] {e}")
-                
+            
+            # Advance progress for this video
             progress.advance(task)
     
     console.print("[green]✓[/green] Processing complete")
