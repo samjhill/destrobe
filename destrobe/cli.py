@@ -165,60 +165,53 @@ def run(
     )
     
     # Process files
-    with Progress() as progress:
-        task = progress.add_task("Processing videos...", total=len(video_files))
+    for i, video_file in enumerate(video_files, 1):
+        console.print(f"\n[cyan]Processing video {i}/{len(video_files)}:[/cyan] {video_file.name}")
         
-        for video_file in video_files:
-            progress.update(task, description=f"Processing {video_file.name}")
+        # Generate output filename
+        stem = video_file.stem
+        suffix = f".{method}" if method != "median3" else ".median3"
+        output_file = outdir / f"{stem}{suffix}{ext}"
+        
+        if output_file.exists() and not overwrite:
+            console.print(f"[yellow]Skipping:[/yellow] {output_file} already exists")
+            continue
+        
+        try:
+            # Process the video - internal tqdm will show frame progress
+            metrics = processor.process_video(
+                video_file, output_file, progress_callback=None
+            )
             
-            # Generate output filename
-            stem = video_file.stem
-            suffix = f".{method}" if method != "median3" else ".median3"
-            output_file = outdir / f"{stem}{suffix}{ext}"
+            # Log metrics
+            if logger:
+                log_entry = {
+                    "file": str(video_file),
+                    "output": str(output_file),
+                    "method": method,
+                    "strength": strength,
+                    "flash_thresh": flash_thresh,
+                    "normalize_input": not no_normalize,
+                    "fast_normalize": fast_normalize,
+                    **metrics,
+                }
+                logger.info(log_entry)
             
-            if output_file.exists() and not overwrite:
-                console.print(f"[yellow]Skipping:[/yellow] {output_file} already exists")
-                progress.advance(task)
-                continue
-            
-            try:
-                # Process the video
-                metrics = processor.process_video(
-                    video_file, output_file, progress_callback=None
+            # Print summary
+            if "flicker_before" in metrics and "flicker_after" in metrics:
+                reduction = (1 - metrics["flicker_after"] / metrics["flicker_before"]) * 100
+                normalized_indicator = " [normalized]" if metrics.get("input_normalized", False) else ""
+                console.print(
+                    f"[green]✓[/green] {video_file.name}{normalized_indicator} → {output_file.name}\n"
+                    f"  FI: {metrics['flicker_before']:.3f} → {metrics['flicker_after']:.3f} "
+                    f"({reduction:+.1f}%), SSIM: {metrics.get('ssim', 0):.3f}"
                 )
-                
-                # Log metrics
-                if logger:
-                    log_entry = {
-                        "file": str(video_file),
-                        "output": str(output_file),
-                        "method": method,
-                        "strength": strength,
-                        "flash_thresh": flash_thresh,
-                        "normalize_input": not no_normalize,
-                        "fast_normalize": fast_normalize,
-                        **metrics,
-                    }
-                    logger.info(log_entry)
-                
-                # Print summary
-                if "flicker_before" in metrics and "flicker_after" in metrics:
-                    reduction = (1 - metrics["flicker_after"] / metrics["flicker_before"]) * 100
-                    normalized_indicator = " [normalized]" if metrics.get("input_normalized", False) else ""
-                    console.print(
-                        f"→ {video_file.name}{normalized_indicator} → {output_file.name}\n"
-                        f"  FI: {metrics['flicker_before']:.3f} → {metrics['flicker_after']:.3f} "
-                        f"({reduction:+.1f}%), SSIM: {metrics.get('ssim', 0):.3f}"
-                    )
-                
-                if benchmark and "fps" in metrics:
-                    console.print(f"  Performance: {metrics['fps']:.1f} fps")
-                
-            except Exception as e:
-                console.print(f"[red]Error processing {video_file.name}:[/red] {e}")
             
-            # Advance progress for this video
-            progress.advance(task)
+            if benchmark and "fps" in metrics:
+                console.print(f"  Performance: {metrics['fps']:.1f} fps")
+            
+        except Exception as e:
+            console.print(f"[red]Error processing {video_file.name}:[/red] {e}")
     
     console.print("[green]✓[/green] Processing complete")
 
