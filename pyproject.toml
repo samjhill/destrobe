@@ -4,17 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "destrobe"
-version = "0.1.0"
-description = "CLI tool for reducing video strobing and flicker"
+version = "1.0.0"
+description = "Cross-platform CLI tool for reducing video strobing and flicker while preserving audio and sync"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
-    {name = "destrobe contributors"}
+    {name = "Sam Hill", email = "sam@samjhill.com"}
 ]
+keywords = ["video", "flicker", "strobe", "photosensitive", "epilepsy", "accessibility", "cli"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: End Users/Desktop",
-    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Healthcare Industry",
+
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -22,6 +24,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Multimedia :: Video",
     "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Utilities",
+    "Environment :: Console",
 ]
 requires-python = ">=3.10"
 dependencies = [

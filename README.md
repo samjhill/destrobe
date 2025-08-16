@@ -47,13 +47,21 @@ destrobe run input.mp4 --preset strong
 ### Using pipx (Recommended)
 
 ```bash
+# Install from PyPI (simplest)
 pipx install destrobe
+
+# Or install from GitHub (latest development version)
+pipx install git+https://github.com/samjhill/destrobe.git
 ```
 
 ### Using pip
 
 ```bash
+# Install from PyPI
 pip install destrobe
+
+# Or install from GitHub
+pip install git+https://github.com/samjhill/destrobe.git
 ```
 
 ### From Source
